@@ -1,0 +1,5 @@
+#BlueJ class context
+comment0.params=a\ alpha\ q
+comment0.target=double[]\ rank(Jama.Matrix,\ double,\ Jama.Matrix)
+comment0.text=\r\nInput\ \:\ Une\ matrice\ d\u2019adjacence\ A\ d\u2019un\ graphe\ dirig\u00E9,\ \r\npond\u00E9r\u00E9\ et\ r\u00E9gulier\ G\ ainsi\ qu\u2019un\ param\u00E8tre\ de\ t\u00E9l\u00E9portation\ \u03B1\ entre\ 0\ et\ 1\ \r\n(inutile\ de\ le\ v\u00E9ri\uFB01er)\ et\ en\uFB01n\ un\ vecteur\ de\ personnalisation\ q.\ \r\n\r\nOutput\ \:\ Un\ vecteur\ x\ contenant\ les\ scores\ d\u2019importance\ des\ noeuds\ \r\nordonn\u00E9s\ dans\ le\ m\u00EAme\ ordre\ que\ la\ matrice\ d\u2019adjacence\r\n\r\nUtilise\ la\ "Power\ Methode"\r\n
+numComments=1

@@ -1,0 +1,14 @@
+#BlueJ class context
+comment0.params=args
+comment0.target=void\ main(java.lang.String[])
+comment1.params=filename
+comment1.target=double[][]\ fileToTable(java.lang.String)
+comment2.params=array\ length
+comment2.target=double[][]\ arrayToTable(java.util.ArrayList,\ int)
+comment3.params=adjacencyMatrice
+comment3.target=double[]\ getDegreeVector(double[][])
+comment4.params=length\ teleportaionParameter
+comment4.target=Jama.Matrix\ getLeapProbabilities(int,\ double)
+comment5.params=adjacencyMatrice\ degreeVector\ teleportationParameter
+comment5.target=Jama.Matrix\ getLinkProbabilities(double[][],\ double[],\ double)
+numComments=6
