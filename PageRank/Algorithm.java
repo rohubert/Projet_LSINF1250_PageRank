@@ -19,15 +19,32 @@ public class Algorithm
      */
     public static double[] rank(Matrix a, double alpha, Matrix q){
         int moveCount=0;
-        while(moveCount!=20){
-            /*for(int i=0;i<q.getColumnDimension(); i++){
-                System.out.print(Double.toString(q.get(0,i))+", ");
+        Matrix newVector = new Matrix(1,q.getColumnDimension());
+        while(true){
+            
+            newVector = power(q,a);
+            if(equalV(newVector,q)){
+                return newVector.getColumnPackedCopy();
             }
-            System.out.println("");
-            Main.afficheMatrix(a);*/
-            q = q.times(a);
-            moveCount++;
+            q = newVector;
         }
-        return q.getColumnPackedCopy();
+    }
+    
+    public static Matrix power(Matrix personnalisationVector, Matrix a){
+        return personnalisationVector.times(a);
+    }
+    
+    public static boolean equalV(Matrix a, Matrix b){
+        if((a.getRowDimension() != b.getRowDimension()) || (a.getColumnDimension() != b.getColumnDimension())){
+            return false;
+        }
+        for(int i=0; i<a.getRowDimension();i++){
+            for(int j=0; j<a.getColumnDimension();j++){
+                if(!((a.get(i,j)-b.get(i,j) < 0.0000005) && (b.get(i,j)-a.get(i,j) < 0.0000005))){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
