@@ -22,12 +22,24 @@ public class Main
             if(adjacencyMatrice != null){
                 int m = adjacencyMatrice.length; //size of the matrice
                 matrix = new Matrix(adjacencyMatrice);
+                //System.out.println("The adjency matrix is: ");
+                //afficheMatrix(matrix);
+                
                 double[] degreeVector = getDegreeVector(adjacencyMatrice);
                 //double teleportationParameter = Math.random();
-                double teleportationParameter = 0.1;
+                double teleportationParameter = 0.9;
                 Matrix leapProbabilities = getLeapProbabilities(m,teleportationParameter);
+                System.out.println("The leapProbabilities matrix is: ");
+                afficheMatrix(leapProbabilities);
+                
                 Matrix linkProbabilities = getLinkProbabilities(adjacencyMatrice, degreeVector, teleportationParameter); 
+                System.out.println("The linkProbabilities matrix is: ");
+                afficheMatrix(linkProbabilities);
+                
                 Matrix transitionMatrix = leapProbabilities.plus(linkProbabilities);
+                //System.out.println("The transition matrix is: ");
+                //afficheMatrix(transitionMatrix);
+                //System.out.println(verify(transitionMatrix));
                 
                 Matrix personalisationVector = new Matrix(1,m);
                 personalisationVector.set(0,0,1.0); //value of personalisationVector is now: {1 , 0 , ... , 0 , 0}
@@ -41,6 +53,7 @@ public class Main
                     System.out.print(Double.toString(rankingVector[i])+", ");
                 }
                 System.out.println(Double.toString(rankingVector[rankingVector.length-1]));
+                
             }
             else{
                 System.out.println("Erreur: le fichier "+args[0]+" n'a pas put être traduit en matrice.");
@@ -101,17 +114,46 @@ public class Main
     
     public static Matrix getLeapProbabilities(int length, double teleportaionParameter){
         Matrix tmp = new Matrix(length,length,1.0); //create a new matrice of size = length filled with 1
-        tmp.times((1.0 - teleportaionParameter)/length); //scalar multiplication 
+        tmp = tmp.times((1.0 - teleportaionParameter)/length); //scalar multiplication 
         return tmp;
     }
     
     public  static Matrix getLinkProbabilities(double[][] adjacencyMatrice, double[] degreeVector, double teleportationParameter){
-        double value = 1.0 - teleportationParameter;
+        double value = teleportationParameter;
         for(int i=0; i< adjacencyMatrice.length;i++){
             for(int j=0; j<adjacencyMatrice[i].length;j++){
                 adjacencyMatrice[i][j] = (adjacencyMatrice[i][j]*value)/degreeVector[i];
             }
         }
+        //vérifier si une ligne est composée uniquement de 0 dans ce cas remplacer les valeurs par 1/length -> correction de l'erreur dans Coleman
         return new Matrix(adjacencyMatrice);
+    }
+    
+    public static void afficheMatrix(Matrix m){
+        System.out.println("");
+        for(int i=0; i<m.getRowDimension();i++){
+            for(int j=0; j<m.getColumnDimension();j++){
+                System.out.print(Double.toString(m.get(i,j))+" ");
+            }
+            System.out.println("");
+        }
+        System.out.println("");
+    }
+    
+    public static boolean verify(Matrix m){
+        double sum2 = 0;
+        for(int i=0; i<m.getRowDimension();i++){
+            double sum = 0;
+            for(int j=0; j<m.getColumnDimension();j++){
+                sum +=m.get(i,j);
+                if(j==m.getColumnDimension()-1 && sum !=1.0){
+                    System.out.println(sum+" ");
+                }
+            }
+            if(i==m.getRowDimension() && sum2 != 1.0){
+                System.out.print(sum2+" ");
+            }
+        }
+        return true;
     }
 }

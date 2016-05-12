@@ -20,6 +20,11 @@ public class Algorithm
     public static double[] rank(Matrix a, double alpha, Matrix q){
         int moveCount=0;
         while(moveCount!=20){
+            /*for(int i=0;i<q.getColumnDimension(); i++){
+                System.out.print(Double.toString(q.get(0,i))+", ");
+            }
+            System.out.println("");
+            Main.afficheMatrix(a);*/
             q = q.times(a);
             moveCount++;
         }
