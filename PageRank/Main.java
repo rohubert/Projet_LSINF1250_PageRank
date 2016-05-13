@@ -13,55 +13,71 @@ import java.lang.Math;
  * @author (votre nom)
  * @version (un numéro de version ou une date)
  */
-public class Main
-{
+public class Main{
     public static void main(String args[]){
+        String filename="";
+        double teleportationParameter=1.0;
         if(args.length==1){
-            double[][] adjacencyMatrice = fileToTable(args[0]); //implementation of the adjency Matrice by reading the textfile
-            Matrix matrix;
-            if(adjacencyMatrice != null){
-                int m = adjacencyMatrice.length; //size of the matrice
-                matrix = new Matrix(adjacencyMatrice);
-                //System.out.println("The adjency matrix is: ");
-                //afficheMatrix(matrix);
-                
-                double[] degreeVector = getDegreeVector(adjacencyMatrice);
-                //double teleportationParameter = Math.random();
-                double teleportationParameter = 0.9;
-                Matrix leapProbabilities = getLeapProbabilities(m,teleportationParameter);
-                System.out.println("The leapProbabilities matrix is: ");
-                afficheMatrix(leapProbabilities);
-                
-                Matrix linkProbabilities = getLinkProbabilities(adjacencyMatrice, degreeVector, teleportationParameter); 
-                System.out.println("The linkProbabilities matrix is: ");
-                afficheMatrix(linkProbabilities);
-                
-                Matrix transitionMatrix = leapProbabilities.plus(linkProbabilities);
-                //System.out.println("The transition matrix is: ");
-                //afficheMatrix(transitionMatrix);
-                //System.out.println(verify(transitionMatrix));
-                
-                Matrix personalisationVector = new Matrix(1,m);
-                personalisationVector.set(0,0,1.0); //value of personalisationVector is now: {1 , 0 , ... , 0 , 0}
-
-                //Appel de l'algorithme
-                double[] rankingVector = Algorithm.rank(transitionMatrix, teleportationParameter, personalisationVector);
-                
-                //Print the final vector to System.out
-                System.out.println("The ranking Vector is: ");
-                for(int i=0;i<rankingVector.length-1;i++){
-                    System.out.print(Double.toString(rankingVector[i])+", ");
-                }
-                System.out.println(Double.toString(rankingVector[rankingVector.length-1]));
-                
-            }
-            else{
-                System.out.println("Erreur: le fichier "+args[0]+" n'a pas put être traduit en matrice.");
-            }
+            filename = args[0];
+            teleportationParameter = 0.9;
+        }
+        else if(args.length == 2){
+            filename = args[0];
+            teleportationParameter = Double.valueOf(args[1]);
         }
         else{
             System.out.println("Attention: ");
-            System.out.println("ce programme necessite qu'on lui fournisse le nom du fichier texte contenant les données");
+            System.out.println("ce programme necessite qu'on lui fournisse le nom du fichier texte contenant les données (ainsi que le paramètre de téléportation) en paramètre");
+        }
+        double[][] adjacencyMatrice = fileToTable(args[0]); //implementation of the adjency Matrice by reading the textfile
+        Matrix matrix;
+        if(adjacencyMatrice != null){
+            int m = adjacencyMatrice.length; //size of the matrice
+            matrix = new Matrix(adjacencyMatrice);
+            //System.out.println("The adjency matrix is: ");
+            //afficheMatrix(matrix);
+                
+            double[] degreeVector = getDegreeVector(adjacencyMatrice);
+            //System.out.println("The degree vector is: ");
+            /*for(int i = 0;i<degreeVector.length;i++){
+            /*    System.out.print(Double.toString(degreeVector[i])+", ");
+            }
+            System.out.println();*/
+            //double teleportationParameter = Math.random();
+                
+            Matrix leapProbabilities = getLeapProbabilities(m,teleportationParameter); //matrice de saut
+            //System.out.println("The leapProbabilities matrix is: ");
+            //afficheMatrix(leapProbabilities);
+                
+            Matrix linkProbabilities = getLinkProbabilities(adjacencyMatrice, degreeVector, teleportationParameter);  //matrice de probabilité de transition
+            //System.out.println("The linkProbabilities matrix is: ");
+            //afficheMatrix(linkProbabilities);
+                
+            Matrix transitionMatrix = leapProbabilities.plus(linkProbabilities);
+            //System.out.println("The transition matrix is: ");
+            //afficheMatrix(transitionMatrix);
+            //System.out.println(verify(transitionMatrix));
+                
+            Matrix personalisationVector = new Matrix(1,m);
+            personalisationVector.set(0,0,1.0); //value of personalisationVector is now: {1 , 0 , ... , 0 , 0}
+
+            //Appel de l'algorithme
+            double[] rankingVector = Algorithm.rank(transitionMatrix, personalisationVector);
+                
+            //Print the final vector to System.out
+            System.out.println("The ranking Vector is: ");
+            double sum =0;
+            for(int i=0;i<rankingVector.length-1;i++){
+                System.out.print(Double.toString(rankingVector[i])+", ");
+                sum+=rankingVector[i];
+            }
+            System.out.println(Double.toString(rankingVector[rankingVector.length-1]));
+            sum+=rankingVector[rankingVector.length-1];
+            System.out.println("The sum is equal to :" + Double.toString(sum));
+                
+        }
+        else{
+            System.out.println("Erreur: le fichier "+args[0]+" n'a pas put être traduit en matrice.");
         }
     }
     public static double[][] fileToTable(String filename){
@@ -91,6 +107,9 @@ public class Main
         for(int i = 0; i<length ; i++){
             tmp = array.get(i);
             String[] tmp2 = tmp.split(",");
+            if(containsJustZero(tmp2)){
+                tmp2 = replaceValues(tmp2);
+            }
             for(int j=0;j<tmp2.length;j++){
                 table[i][j] = Double.valueOf(tmp2[j]);
             }
@@ -103,7 +122,7 @@ public class Main
         double[] dV = new double[adjacencyMatrice.length]; //vector of the same size of the adjacency Matrice
         
         for(int i=0; i<adjacencyMatrice.length ; i++){
-            int sum = 0;
+            double sum = 0;
             for(int j=0; j<adjacencyMatrice[i].length ; j++){
                 sum += adjacencyMatrice[i][j];
             }
@@ -127,6 +146,29 @@ public class Main
         }
         //vérifier si une ligne est composée uniquement de 0 dans ce cas remplacer les valeurs par 1/length -> correction de l'erreur dans Coleman
         return new Matrix(adjacencyMatrice);
+    }
+    
+    public static boolean containsJustZero(String[] table){
+        for(int i=0; i<table.length;i++){
+            //System.out.print(table[i]+", ");
+            if(!table[i].equals("0")){
+                //System.out.println();
+                return false;
+            }
+        }
+        //System.out.println();
+        return true;
+    }
+    
+    //remplace les valeurs d'un vecteur par 1/length ou length est la longueur du vecteur
+    public static String[] replaceValues(String[] table){
+        double value = 1/((double)table.length);
+        String s = Double.toString(value);
+        //System.out.print(s);
+        for(int i = 0;i<table.length;i++){
+            table[i]=s;
+        }
+        return table;
     }
     
     public static void afficheMatrix(Matrix m){

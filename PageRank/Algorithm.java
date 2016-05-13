@@ -17,7 +17,7 @@ public class Algorithm
      *
      *Utilise la "Power Methode"
      */
-    public static double[] rank(Matrix a, double alpha, Matrix q){
+    public static double[] rank(Matrix a,  Matrix q){
         int moveCount=0;
         Matrix newVector = new Matrix(1,q.getColumnDimension());
         while(true){
